@@ -1,55 +1,89 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet } from 'react-native';
-
-/*Palcing following code in render 
-
-  let name = this.props.route.params.name;
-  this.props.navigation.setOptions({ title: name });
-
-produced error 
-'Warning: Cannot update a component from inside the function body of a different component.'
- To avoid this, componentDidMount was used instead
-
-The warning comes from React. Params/options here are being updated in constructor/render 
-which React warns against, since it updates state of parent component.
-Do not change navigation properties in the constructor, and best way is to use componentDidMount*/
+import { View, StyleSheet, Platform, KeyboardAvoidingView } from 'react-native';
+import { GiftedChat, Bubble } from 'react-native-gifted-chat'
 
 export default class Chat extends React.Component {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.state = {
-      name: '',
-      color: ''
+      messages: [],
     }
-  };
-
-  user() {
-    let name = this.props.route.params.name;
-    this.props.navigation.setOptions({ title: name });
   }
 
+  // Sets the state, and shows static message with the user's name
   componentDidMount() {
-    this.user(); // here is the right place to change header title
+    const name = this.props.route.params.name;
+
+    this.setState({
+      messages: [
+        {
+          _id: 1,
+          text: 'Hello developer',
+          createdAt: new Date(),
+          user: {
+            _id: 2,
+            name: 'React Native',
+            avatar: 'https://placeimg.com/140/140/any',
+          },
+        },
+        {
+          //Static message with the users typed in name
+          _id: 2,
+          text: `${name} has entered the chat`,
+          createdAt: new Date(),
+          system: true,
+        },
+      ],
+    });
+  }
+
+  // Event handler for when chat message is sent
+  onSend(messages = []) {
+    this.setState((previousState) => ({
+      messages: GiftedChat.append(previousState.messages, messages),
+    }));
+  }
+
+  //Let's customise chat bubble color
+  renderBubble(props) {
+    return (
+      <Bubble
+        {...props}
+        wrapperStyle={{
+          right: {
+            backgroundColor: '#7ac5cd',
+          },
+        }}
+      />
+    );
   }
 
   render() {
-    //Didn't manage to remove that error for background color. It still sets the color
-    //but produces the error described above. Trying the same as for name didn't work.
-    //Not sure what I'm doing wrong
-    let color = this.props.route.params.color;
-    this.props.navigation.setOptions({ backgroundColor: color });
+    const color = this.props.route.params.color; // Color user selected in Start.js
+    const styles = StyleSheet.create({
+      container: {
+        backgroundColor: color,
+        flex: 1,
+      },
+    });
+
+    const { messages } = this.state;
+
     return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: color }}>
-        <Text style={styles.text}>Hello Chat!</Text>
+      <View style={styles.container}>
+        <GiftedChat
+          renderBubble={this.renderBubble.bind(this)}
+          messages={messages}
+          onSend={(messages) => this.onSend(messages)}
+          user={{
+            _id: 1,
+          }}
+        />
+        {/* Android keyboard fix */}
+        {Platform.OS === 'android' ? (
+          <KeyboardAvoidingView behavior='height' />
+        ) : null}
       </View>
     );
   }
 }
-
-const styles = StyleSheet.create({
-
-  text: {
-    flex: 1,
-    textAlign: 'center',
-  }
-});

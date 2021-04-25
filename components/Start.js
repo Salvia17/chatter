@@ -43,25 +43,46 @@ export default class Start extends React.Component {
 
             <View style={styles.backgroundColor}>
               <TouchableOpacity
+                //Accessibility properties
+                accessible={true}
+                accessibilityLabel='Black background'
+                accessibilityHint='Choose background color'
+                accessibilityRole='button'
                 style={styles.color1}
                 //sets background state to selected color
                 onPress={() => { this.setState({ color: '#090C08' }) }}
               ></TouchableOpacity>
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel='Purple background'
+                accessibilityHint='Choose background color'
+                accessibilityRole='button'
                 style={styles.color2}
                 onPress={() => { this.setState({ color: '#474056' }) }}
               ></TouchableOpacity>
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel='Blue background'
+                accessibilityHint='Choose background color'
+                accessibilityRole='button'
                 style={styles.color3}
                 onPress={() => { this.setState({ color: '#8A95A5' }) }}
               ></TouchableOpacity>
               <TouchableOpacity
+                accessible={true}
+                accessibilityLabel='Green background'
+                accessibilityHint='Choose background color'
+                accessibilityRole='button'
                 style={styles.color4}
                 onPress={() => { this.setState({ color: '#B9C6AE' }) }}
               ></TouchableOpacity>
             </View>
 
             <TouchableOpacity
+              accessible={true}
+              accessibilityLabel='Chat button'
+              accessibilityHint='Navigate to chat screen'
+              accessibilityRole='button'
               style={styles.chatBtn}
               title="Start Chattering"
               // Let's you navigate to the Chat screen and sets the state to the name user entered in text input
