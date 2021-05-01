@@ -6,7 +6,8 @@ import {
   ImageBackground,
   TouchableOpacity,
   KeyboardAvoidingView, //This will allow not to cover input field by the keyboard
-  Platform
+  Platform,
+  Alert
 } from 'react-native';
 
 import { TextInput } from 'react-native-gesture-handler';
@@ -23,8 +24,18 @@ export default class Start extends React.Component {
   }
 
   render() {
+    const name = this.state.name;
+    const color = this.state;
+    const onPressChat = (name) => {
+      if (name === "") {
+        //Alerts user to enter the name if none has been entered
+        return Alert.alert("Enter Name to Continue.");
+      }
+      this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color });
+    }
+
     return (
-      <ImageBackground source={image} style={styles.image}>
+      <ImageBackground source={image} style={styles.image} >
         <KeyboardAvoidingView
           behavior={Platform.OS === "ios" ? 50 : 'height'}
           style={styles.container}>
@@ -85,8 +96,9 @@ export default class Start extends React.Component {
               accessibilityRole='button'
               style={styles.chatBtn}
               title="Start Chattering"
-              // Let's you navigate to the Chat screen and sets the state to the name user entered in text input
-              onPress={() => this.props.navigation.navigate('Chat', { name: this.state.name, color: this.state.color })}
+              // Let's you navigate to the Chat screen and sets the state to the name user entered in text input,
+              //and chosen color
+              onPress={() => onPressChat(name, color)}
             >
               <Text style={styles.chatBtnTxt}>
                 Start Chattering
