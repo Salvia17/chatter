@@ -25,7 +25,7 @@ export default class Start extends React.Component {
 
   render() {
     const name = this.state.name;
-    const color = this.state;
+    const color = this.state.color;
     const onPressChat = (name) => {
       if (name === "") {
         //Alerts user to enter the name if none has been entered
