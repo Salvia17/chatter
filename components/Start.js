@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React from 'react';
 import {
   StyleSheet,
   View,
@@ -19,7 +19,7 @@ export default class Start extends React.Component {
     super(props);
     this.state = {
       name: '',
-      color: ''
+      color: '#fff'
     };
   }
 

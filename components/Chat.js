@@ -15,7 +15,7 @@ export default class Chat extends React.Component {
     super(props);
     this.state = {
       messages: [],
-      uid: 0,
+      uid: 1,
       user: {
         _id: '',
         name: '',
@@ -27,18 +27,16 @@ export default class Chat extends React.Component {
 
 
     // Firebase configuration for the App
-    var firebaseConfig = {
-      apiKey: "AIzaSyD1CrYyz9KMWySTcyhk_3L-fAU-4rbf1DM",
-      authDomain: "chatter-9713f.firebaseapp.com",
-      projectId: "chatter-9713f",
-      storageBucket: "chatter-9713f.appspot.com",
-      messagingSenderId: "567153556688",
-      appId: "1:567153556688:web:de23d1a476614cebf032d5",
-      measurementId: "G-S86WRV6PRF"
-    };
-
     if (!firebase.apps.length) {
-      firebase.initializeApp(firebaseConfig);
+      firebase.initializeApp({
+        apiKey: "AIzaSyBfWqodqLsH0hml-7tMn80GH1NzV1W9UHQ",
+        authDomain: "test-79db7.firebaseapp.com",
+        projectId: "test-79db7",
+        storageBucket: "test-79db7.appspot.com",
+        messagingSenderId: "723612865067",
+        appId: "1:723612865067:web:7844ee6f5974a43703506e",
+        measurementId: "G-NFY72219NR"
+      });
     }
 
     this.referenceChatMessages = firebase.firestore().collection("messages");
@@ -46,7 +44,7 @@ export default class Chat extends React.Component {
     LogBox.ignoreLogs([
       'Setting a timer',
       'Animated.event now requires a second argument for options',
-      'expo-permissions is now deprecated'
+      'expo-permissions is now deprecated',
     ]);
   }
 
@@ -54,18 +52,22 @@ export default class Chat extends React.Component {
   componentDidMount() {
     let name = this.props.route.params.name;
     this.props.navigation.setOptions({ title: name });
+
     // Checks for user's connection
     NetInfo.fetch().then((connection) => {
       if (connection.isConnected) {
-        this.setState({ isConnected: true });
+        // connect to messages collection
+        this.referenceChatMessages = firebase.firestore().collection("messages");
 
         // Authenticates user via Firebase
         this.authUnsubscribe = firebase.auth().onAuthStateChanged(async (user) => {
           if (!user) {
             await firebase.auth().signInAnonymously();
           }
+
           // Update user state
           this.setState({
+            isConnected: true,
             uid: user.uid,
             user: {
               _id: user.uid,
@@ -73,9 +75,6 @@ export default class Chat extends React.Component {
             },
             messages: [],
           });
-
-          // Reference to load messages via Firebase
-          this.referenceChatMessages = firebase.firestore().collection('messages');
 
           // Lists for collection changes of currnet user
           this.unsubscribeChatUser = this.referenceChatMessages.orderBy('createdAt', 'desc').onSnapshot(this.onCollectionUpdate);
@@ -108,7 +107,10 @@ export default class Chat extends React.Component {
         _id: data._id,
         text: data.text,
         createdAt: data.createdAt.toDate(),
-        user: data.user,
+        user: {
+          _id: data.user._id,
+          name: data.user.name,
+        },
         image: data.image || null,
         location: data.location || null,
       });
@@ -235,10 +237,7 @@ export default class Chat extends React.Component {
       },
     });
 
-    const { messages } = this.state;
-    const { user } = this.state;
-    // const { name } = this.props.route.params;
-
+    const { messages, user } = this.state;
     return (
       <View style={styles.container}>
         <GiftedChat
@@ -250,10 +249,6 @@ export default class Chat extends React.Component {
           messages={messages}
           onSend={(messages) => this.onSend(messages)}
           user={user}
-        /*user={{
-          _id: this.state.uid,
-          name: name,
-        }}*/
         />
         {/* Android keyboard fix */}
         {Platform.OS === 'android' ? (
